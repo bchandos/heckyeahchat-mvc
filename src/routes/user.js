@@ -42,15 +42,14 @@ router.delete('/:id?', authenticateToken, async (req, res) => {
 
 // Other routes
 
-// router.get('/:id/things', authenticateToken, async (req, res) => {
-//     // Get all a specific user's lanes
-//     const user = await User.findByPk(req.params.id);
-//     if (user) {
-//         return res.json(await user.getThings());
-//     } else {
-//         return res.json([]);
-//     }
-// })
-
+router.get('/:id/conversations', authenticateToken, async (req, res) => {
+    // Get all a specific user's lanes
+    const user = await User.findByPk(req.params.id);
+    if (user) {
+        return res.json(await user.getConversations());
+    } else {
+        return res.json([]);
+    }
+})
 
 module.exports = router;

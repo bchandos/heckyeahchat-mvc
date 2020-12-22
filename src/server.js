@@ -6,7 +6,6 @@ const wss = require('./wss');
 const sequelize = require('./models');
 
 const routes = require('./routes');
-const router = require('./routes/user');
 
 const app = express();
 
@@ -16,6 +15,8 @@ app.use(express.json());
 // Assign routes here
 app.use('/user', routes.user);
 app.use('/auth', routes.auth);
+app.use('/conversation', routes.conversation);
+app.use('/message', routes.message);
 
 const server = app.listen(process.env.PORT, async () => {
     await sequelize.sync();
