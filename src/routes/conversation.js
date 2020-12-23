@@ -46,7 +46,7 @@ router.get('/:id/messages', authenticateToken, async (req, res) => {
     // Get all a specific conversation's messages
     const conversation = await Conversation.findByPk(req.params.id);
     if (conversation) {
-        return res.json(await conversation.getMessages( {include: 'User'} ));
+        return res.json(await conversation.getMessages( {order: ['sentAt'], include: 'User'} ));
     } else {
         return res.json([]);
     }
