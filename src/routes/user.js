@@ -19,6 +19,8 @@ router.post('/', authenticateToken, async (req, res) => {
     const user = await User.create({
         firstName: body.firstName,
         lastName: body.lastName,
+        email: body.email,
+        nickname: body.nickname,
     })
     return res.json(user);
 })
@@ -29,6 +31,8 @@ router.put('/:id?', authenticateToken, async (req, res) => {
     const user = await User.findByPk(userId);
     user.firstName = req.body.firstName;
     user.lastName = req.body.lastName;
+    user.nickname = req.body.nickname;
+    user.email = req.body.email;
     await user.save();
     return res.json(user);
 })
