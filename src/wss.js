@@ -3,6 +3,9 @@ const { authenticateWebsocket } = require('./jwt');
 const sequelize = require('./models');
 
 const Message = sequelize.models.Message;
+const User = sequelize.models.User;
+const Reaction = sequelize.models.Reaction;
+const ReactionType = sequelize.models.ReactionType;
 
 const wss = new Server({ noServer: true });
 
@@ -22,17 +25,50 @@ wss.on('connection', (ws) => {
         }
         else {
             let response;
-            if (msgJson.type === 'new-message') {
-                const message = await Message.create({
-                    text: msgJson.contents.text,
-                    sentAt: msgJson.contents.sentAt,
-                    size: msgJson.contents.size,
-                });
-                message.setUser(msgJson.contents.UserId);
-                message.setConversation(msgJson.contents.ConversationId);
-                await message.save();
-                response = await Message.findByPk(message.id, { include: 'User'} );
-            }
+            switch (msgJson.type) {
+                case 'new-message':
+                    const message = await Message.create({
+                        text: msgJson.contents.text,
+                        sentAt: msgJson.contents.sentAt,
+                        size: msgJson.contents.size,
+                    });
+                    message.setUser(msgJson.contents.UserId);
+                    message.setConversation(msgJson.contents.ConversationId);
+                    await message.save();
+                    response = {
+                        type: 'message',
+                        contents: await Message.findByPk(message.id, {
+                            include: [
+                                User, 
+                                {
+                                    model: Reaction,
+                                    include: [ReactionType],
+                                },
+                            ],
+                        }),
+                    };
+                    break;
+                case 'new-reaction':
+                    const reaction = await Reaction.create({
+                        reactedAt: msgJson.contents.reactedAt,
+                    });
+                    reaction.setUser(msgJson.contents.UserId);
+                    reaction.setReactionType(msgJson.contents.reactionTypeId);
+                    await reaction.save();
+                    response = {
+                        type: 'reaction',
+                        contents: await Message.findByPk(reaction.id, { 
+                            include: [
+                                User, 
+                                {
+                                    model: Reaction,
+                                    include: [ReactionType],
+                                },
+                            ],
+                        }),
+                    };
+                    break;
+                }
 
             for (let client of wss.clients) {
                 if (client.readyState === 1) {

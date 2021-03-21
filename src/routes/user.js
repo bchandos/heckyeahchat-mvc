@@ -47,10 +47,18 @@ router.delete('/:id?', authenticateToken, async (req, res) => {
 // Other routes
 
 router.get('/:id/conversations', authenticateToken, async (req, res) => {
-    // Get all a specific user's lanes
+    // Get all a specific user's conversations
     const user = await User.findByPk(req.params.id);
     if (user) {
-        return res.json(await user.getConversations());
+        const conversations = await user.getConversations();
+        // Do too much work to add the user counts to each conversation 
+        const conversationsWithCounts = await Promise.all(conversations.map(async (conversation) => {
+            const users = await conversation.getUsers();
+            const userCount = users.length;
+            conversation.setDataValue('userCount', userCount);
+            return conversation;
+        }))
+        return res.json(conversationsWithCounts);
     } else {
         return res.json([]);
     }

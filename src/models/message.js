@@ -14,6 +14,18 @@ const message = (sequelize, Model, DataTypes) => {
             type: DataTypes.DATE,
             allowNull: false
         },
+        sentAtPrettyDate: {
+            type: DataTypes.VIRTUAL,
+            get() {
+                return new Date(this.sentAt).toLocaleDateString('en-US', {dateStyle: 'short', timeStyle: 'short'});
+            },
+        },
+        sentAtPrettyTime: {
+            type: DataTypes.VIRTUAL,
+            get() {
+                return new Date(this.sentAt).toLocaleTimeString('en-US', {timeStyle: 'short'});
+            }
+        },
     }, {
         sequelize,
         modelName: 'Message'

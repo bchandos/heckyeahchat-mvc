@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const sequelize = require('../models');
 const { authenticateToken } = require('../jwt');
-const User = require('../models/user');
 
 const Conversation = sequelize.models.Conversation;
+const User = sequelize.models.User;
+const Reaction = sequelize.models.Reaction;
+const ReactionType = sequelize.models.ReactionType;
 
 // CRUD 
 
@@ -46,7 +48,16 @@ router.get('/:id/messages', authenticateToken, async (req, res) => {
     // Get all a specific conversation's messages
     const conversation = await Conversation.findByPk(req.params.id);
     if (conversation) {
-        return res.json(await conversation.getMessages( {order: ['sentAt'], include: 'User'} ));
+        return res.json(await conversation.getMessages({
+            order: ['sentAt'], 
+            include: [
+                User,
+                {
+                    model: Reaction,
+                    include: [ ReactionType ]
+                },
+            ]
+        }));
     } else {
         return res.json([]);
     }

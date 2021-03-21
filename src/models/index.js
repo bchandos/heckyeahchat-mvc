@@ -8,6 +8,8 @@ const message = require('./message');
 const conversation = require('./conversation');
 const reaction = require('./reaction');
 const reactionType = require('./reactionType');
+const attachment = require('./attachment');
+const quotedMessage = require('./quotedMessage');
 
 // Initialize Sequelize objects
 
@@ -23,6 +25,8 @@ const Message = message(sequelize, Model, DataTypes);
 const Conversation = conversation(sequelize, Model, DataTypes);
 const Reaction = reaction(sequelize, Model, DataTypes);
 const ReactionType = reactionType(sequelize, Model, DataTypes);
+const Attachment = attachment(sequelize, Model, DataTypes);
+const QuotedMessage = quotedMessage(sequelize, Model, DataTypes);
 
 User.addScope('ordered', {
     order: [
@@ -43,6 +47,12 @@ Message.belongsTo(Conversation);
 
 Message.hasMany(Reaction);
 Reaction.belongsTo(Message);
+
+Message.hasMany(Attachment);
+Attachment.belongsTo(Message);
+
+Message.hasMany(QuotedMessage);
+QuotedMessage.belongsTo(Message);
 
 User.hasMany(Reaction);
 Reaction.belongsTo(User);
