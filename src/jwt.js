@@ -24,7 +24,6 @@ const authenticateToken = async (req, res, next) => {
     }
 }
 
-
 const generateAccessToken = (user) => {
     return jwt.sign({user: 
         {

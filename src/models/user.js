@@ -45,6 +45,15 @@ const user = (sequelize, Model, DataTypes) => {
             beforeCreate: async (user, options) => {
                 const hashedPassword = await bcrypt.hash(user.password, 10);
                 user.password = hashedPassword;
+            },
+            beforeUpdate: async (user, options) => {
+                if (options.fields.includes('password')) {
+                    const oldPass = user._previousDataValues.password;
+                    if (!bcrypt.compareSync(user.password, oldPass)) {
+                        const hashedPassword = await bcrypt.hash(user.password, 10);
+                        user.password = hashedPassword;
+                    }
+                }
             }
         },
         sequelize,

@@ -19,10 +19,16 @@ router.get('/:id', authenticateToken, async (req, res) => {
 router.post('/', authenticateToken, async (req, res) => {
     // Create a conversation, and add users
     const body = req.body;
+    const users = await Promise.all(
+        body.userIds.map(async userId => (
+            await User.findByPk(userId)
+        ))
+    );
+    const conversationName = users.map(user => user.nickname).join(', ');
     const conversation = await Conversation.create({
-        name: body.name,
+        name: conversationName,
     })
-    conversation.addUsers(req.body.users);
+    conversation.addUsers(users);
     return res.json(conversation);
 })
 
@@ -49,7 +55,10 @@ router.get('/:id/messages', authenticateToken, async (req, res) => {
     const conversation = await Conversation.findByPk(req.params.id);
     if (conversation) {
         return res.json(await conversation.getMessages({
-            order: ['sentAt'], 
+            limit: parseInt(req.query.total),
+            order: [
+                ['sentAt', 'DESC']
+            ], 
             include: [
                 User,
                 {

@@ -11,7 +11,13 @@ router.get('/:id', authenticateToken, async (req, res) => {
     // Read a user
     const users = await User.findByPk(req.params.id);
     return res.json(users);
-})
+});
+
+router.get('/', authenticateToken, async (req, res) => {
+    // Read all users
+    const users = await User.findAll();
+    return res.json(users);
+});
 
 router.post('/', authenticateToken, async (req, res) => {
     // Create a user
@@ -29,10 +35,10 @@ router.put('/:id?', authenticateToken, async (req, res) => {
     // Update a user
     const userId = req.params.id || req.body.id;
     const user = await User.findByPk(userId);
-    user.firstName = req.body.firstName;
-    user.lastName = req.body.lastName;
-    user.nickname = req.body.nickname;
-    user.email = req.body.email;
+    const keys = Object.keys(req.body);
+    for (const key of keys) {
+        user[key] = req.body[key];
+    }
     await user.save();
     return res.json(user);
 })
@@ -61,6 +67,25 @@ router.get('/:id/conversations', authenticateToken, async (req, res) => {
         return res.json(conversationsWithCounts);
     } else {
         return res.json([]);
+    }
+})
+
+router.post('/:id/change-password', authenticateToken, async (req, res) => {
+    const user = await User.findByPk(req.params.id);
+    const { oldpass, newpass } = req.body;
+    const authUser = await User.authenticate(user.email, oldpass);
+    // const authUser = user;
+    if (authUser) {
+        authUser.password = newpass;
+        await authUser.save();
+        return res.json({
+            success: true,
+        })
+    } else {
+        return res.json({
+            failed: true,
+            errMessage: 'Current password incorrect.'
+        })
     }
 })
 

@@ -10,7 +10,7 @@ const ReactionType = sequelize.models.ReactionType;
 const wss = new Server({ noServer: true });
 
 wss.on('connection', (ws) => {
-    console.log('Client connected');
+    console.log('Websocket client connected');
     // ws.send(JSON.stringify({'msg': 'You have connected to the websocket'}));
     ws.on('message', async (msg) => {
         const msgJson = JSON.parse(msg);
@@ -79,7 +79,7 @@ wss.on('connection', (ws) => {
         }
     });
     ws.on('close', () => {
-        console.log('Client disconnected');
+        console.log('Websocket client disconnected');
     });
 });
 
