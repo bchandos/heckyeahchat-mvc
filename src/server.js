@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // Assign routes here
+app.use('/', routes.home);
 app.use('/user', routes.user);
 app.use('/auth', routes.auth);
 app.use('/conversation', routes.conversation);
