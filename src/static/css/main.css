@@ -1,0 +1,58 @@
+.brand-logo img {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* body {
+    margin: 0;
+    padding: 0;
+    --primary-bg: peachpuff;
+    --secondary-bg: lightgray;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    margin: 0;
+    background-color: var(--primary-bg);
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    
+}
+
+.page-header img {
+    height: 2rem;
+    padding: 0 1rem;
+}
+
+.page-header > div {
+    display: flex;
+    align-items: center;
+}
+
+.page-content {
+    padding: 1rem;
+    flex-grow: 1;
+    background-color: var(--secondary-bg);
+}
+
+.page-footer {
+    display: flex;
+    display: flex;
+    padding: 0.5rem;
+    margin: 0;
+    background-color: var(--primary-bg);
+    justify-content: center;
+}
+
+.page-footer a {
+    padding: 0 1rem;
+} */
