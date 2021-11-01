@@ -4,6 +4,7 @@ const express = require('express');
 const wss = require('./wss');
 const nj = require('nunjucks');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 const sequelize = require('./models');
 
@@ -13,7 +14,9 @@ const routes = require('./routes');
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+// app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // Assign routes here
 app.use('/user', routes.user);

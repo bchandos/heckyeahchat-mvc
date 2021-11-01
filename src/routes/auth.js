@@ -7,21 +7,26 @@ const User = sequelize.models.User;
 
 router.post('/register', async (req, res) => {
     const user = await User.create({
-        email: req.body.username,
+        email: req.body['email-address'],
         nickname: req.body.nickname,
         password: req.body.password,
     })
-    return res.json({jwt: generateAccessToken(user)});
+    res.cookie(
+        'jwt', generateAccessToken(user), {
+        expires: new Date(Date.now() + 8 * 3600000) // cookie will be removed after 8 hours
+      });
+    return res.redirect('/')
 });
 
 router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const username = req.body['email-address'];
+    const password  = req.body.password;
   
     // if the username / password is missing, we use status code 400
     // indicating a bad request was made and send back a message
     if (!username || !password) {
         return res.status(400).send(
-            'Request missing username or password param'
+            'Request missing username or password parameter'
         );
     }
   
@@ -29,7 +34,11 @@ router.post('/login', async (req, res) => {
   
     if (user) {
         // Create JWT and return
-        return res.json({jwt: generateAccessToken(user)});
+        res.cookie(
+            'jwt', generateAccessToken(user), {
+            expires: new Date(Date.now() + 8 * 3600000) // cookie will be removed after 8 hours
+          });
+        return res.redirect('/')
     } else {
         return res.sendStatus(403);
     }

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}HYC - Sign In{% endblock %}
+
+{% block content %}
+<main class="flex flex-column justify-center h-100 bg-light-gray">
+    <form class="measure center pa4 ba br3 shadow-2 bg-white ma2" method="POST" action="/auth/register">
+        <fieldset id="sign_up" class="ba b--transparent ph0 mh0">
+            <legend class="f4 fw6 ph0 mh0">Create Account</legend>
+            <div class="mt3">
+                <label class="db fw6 lh-copy " for="email-address">Email</label>
+                <input class="pa2 input-reset ba w-100" type="email" name="email-address" id="email-address">
+            </div>
+            <div class="mt3">
+                <label class="db fw6 lh-copy " for="nickname">Nickname</label>
+                <input class="pa2 input-reset ba w-100" type="text" name="nickname" id="nickname">
+            </div>
+            <div class="mv3">
+                <label class="db fw6 lh-copy " for="password">Choose password</label>
+                <input class="b pa2 input-reset ba w-100" type="password" name="password" id="password">
+            </div>
+            <div class="mv3">
+                <label class="db fw6 lh-copy " for="password">Re-type password</label>
+                <input class="b pa2 input-reset ba w-100" type="password" name="password-verify" id="password-verify">
+            </div>
+        </fieldset>
+        <div class="">
+            <button class="b ph3 pv2 input-reset ba b--black br2 pointer hover-bg-light-red w-100 bg-animate" type="submit">Register</button>
+        </div>
+        <div class="lh-copy mt3">
+            <a href="/forgot-password" class=" link dim black db">Forgot your password?</a>
+        </div>
+    </form>
+</main>
+
+{% endblock %}

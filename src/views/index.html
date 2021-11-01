@@ -1,7 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}My Great Page{% endblock %}
+{% block title %}Heck Yeah, Chat!{% endblock %}
 
 {% block content %}
+<main class="flex flex-column justify-center h-100 bg-light-gray">
+    <div class="center w-100 h-100 ma1 w-75-ns h-75-ns ba br4 overflow-hidden flex flex-column">
+        <h2 class="bg-light-red ph2 pv3 ma0">Chats</h2>
+        <div class="flex" style="flex-grow: 1;">
+            <div id="conversation-pane" class="w-20 h-100 db-ns dn bg-washed-red br">
+                {% for conversation in conversations %}
+                    <div class="pa2 bb">{{ conversation.name }}</div>
+                {% else %}
+                    <div class="pa2"><em>No conversations</em></div>
+                {% endfor %}
+            </div>
+            <div id="chat-pane" class="w-80 h-100 pa2 relative">
+                Actual chats go here.
+            <button class="pointer bg-light-red button-reset bn br-100 flex items-center justify-center h3 w3 shadow-2 absolute bottom-1 right-1">
+                <span class="material-icons">add</span>
+            </button>
+            </div>
+        </div>
+    </div>
+</main>
 
 {% endblock %}

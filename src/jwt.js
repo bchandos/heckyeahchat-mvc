@@ -5,8 +5,7 @@ const User = sequelize.models.User;
 
 const authenticateToken = async (req, res, next) => {
     // Gather the jwt access token from the request header
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const token = req.cookies.jwt;
     if (token == null) {
         if (req.xhr) {
             res.status(401);
@@ -26,6 +25,7 @@ const authenticateToken = async (req, res, next) => {
         next(); // pass the execution off to whatever request the client intended
     } catch (err) {
         // redirect login
+        res.clearCookie('jwt');
         return res.redirect('/login');
         // return res.sendStatus(403);
     }
