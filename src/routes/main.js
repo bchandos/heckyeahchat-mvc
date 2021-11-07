@@ -12,7 +12,7 @@ router.get('/', authenticateToken, async (req, res) => {
     const user = await User.findByPk(userId);
     if (user) {
         const conversations = await user.getConversations();
-        return res.render('index.html', { conversations });
+        return res.render('index.html', { user, conversations });
     }
     else {
         return res.redirect('/login');
@@ -28,8 +28,9 @@ router.get('/sign-up', async (req, res) => {
     return res.render('signup.html', {});
 })
 
-// router.get('/logout', async (req, res) => {
-
-// })
+router.get('/logout', async (req, res) => {
+    res.clearCookie('jwt');
+    return res.redirect('/login');
+})
 
 module.exports = router;
