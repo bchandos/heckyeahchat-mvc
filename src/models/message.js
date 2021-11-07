@@ -17,13 +17,13 @@ const message = (sequelize, Model, DataTypes) => {
         sentAtPrettyDate: {
             type: DataTypes.VIRTUAL,
             get() {
-                return new Date(this.sentAt).toLocaleDateString('en-US', {dateStyle: 'short', timeStyle: 'short'});
+                return new Date(this.sentAt).toLocaleDateString(new Intl.DateTimeFormat('en-US', {dateStyle: 'short', timeStyle: 'short'}));
             },
         },
         sentAtPrettyTime: {
             type: DataTypes.VIRTUAL,
             get() {
-                return new Date(this.sentAt).toLocaleTimeString('en-US', {timeStyle: 'short'});
+                return new Date(this.sentAt).toLocaleTimeString(new Intl.DateTimeFormat('en-US', {timeStyle: 'short'}));
             }
         },
     }, {
