@@ -5,21 +5,30 @@
 {% block content %}
 <main class="flex flex-column justify-center h-100 bg-light-gray">
     <div class="center w-100 h-100 ma1 w-75-ns h-75-ns ba bw1 b--gray br4 overflow-hidden flex flex-column">
-        <h2 class="bg-light-red ph2 pv3 ma0">Chats</h2>
+        <h2 class="bg-light-red ph2 pv3 ma0">
+            <span class="dn di-ns">Chats</span>
+            <span class="di dn-m dn-l">
+                <span class="material-icons">menu</span>
+            </span>
+        </h2>
         <div class="flex" style="flex-grow: 1;">
             <div id="conversation-pane" class="w-30 h-100 db-ns dn bg-washed-red br bw1 b--gray relative">
                 {% for conversation in conversations %}
-                    <div class="pa2 bb">{{ conversation.name }}</div>
+                    <a href="/conversation/{{conversation.id}}" class="db pa2 bb no-underline black">
+                        {{ conversation.name }}
+                    </a>
                 {% else %}
                     <div class="pa2"><em>No conversations</em></div>
                 {% endfor %}
-                <button class="pointer bg-light-red button-reset bn br-100 flex items-center justify-center h3 w3 shadow-2 absolute bottom-1 right-1">
+                <button id="add-conversation-btn" class="pointer bg-light-red button-reset bn br-100 flex items-center justify-center h3 w3 shadow-2 absolute bottom-1 right-1">
                     <span class="material-icons">add</span>
                 </button>
             </div>
-            <div id="chat-pane" class="w-100 h-100 pa2">
-                Chat pane goes here, but how??
-            </div>
+            {% block chatpane %}
+                <div id="chat-pane" class="w-100 h-100 pa2">
+                    <em>Select a conversation from the list, or create a new one.</em>
+                </div>
+            {% endblock %}
         </div>
     </div>
 </main>
