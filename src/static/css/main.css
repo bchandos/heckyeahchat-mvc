@@ -7,3 +7,7 @@
 .container {
     flex-grow: 1;
 }
+
+#message-view {
+    flex-grow: 1;
+}
