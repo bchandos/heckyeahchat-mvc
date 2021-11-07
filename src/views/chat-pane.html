@@ -1,0 +1,18 @@
+{% extends "index.html" %}
+
+{% block chatpane %}
+<div id="chat-pane" class="w-100 h-100 flex flex-column">
+    <div id="message-view" class="ma2 w-100">
+        <message-pane id="message-pane" data-conversation-id="{{conversation.id}}"></message-pane>
+    </div>
+    <form action="/message" id="post-message" method="POST" class="w-100 bg-light-green pa2 flex flex-row items-center">
+        <textarea class="w-100" name="text" id="new-message" rows="1"></textarea>
+        <input type="hidden" name="size" value="1">
+        <input type="hidden" name="userId" value="{{user.id}}">
+        <input type="hidden" name="conversationId" value="{{conversation.id}}">
+        <button type="submit" class="bn bg-transparent pointer">
+            <span class="material-icons mh2">send</span>
+        </button>
+    </form>
+</div>    
+{% endblock %}
