@@ -12,8 +12,12 @@ const ReactionType = sequelize.models.ReactionType;
 
 router.get('/:id', authenticateToken, async (req, res) => {
     // Read a conversation
-    const conversations = await Conversation.findByPk(req.params.id);
-    return res.json(conversations);
+    const userId = req.jwtPayload.user.id;
+    const user = await User.findByPk(userId);
+    const conversations = await user.getConversations();
+    const conversation = await Conversation.findByPk(req.params.id);
+    // return res.json(conversations);
+    return res.render('chat-pane.html', { conversation, user, conversations });
 })
 
 router.post('/', authenticateToken, async (req, res) => {
@@ -29,7 +33,7 @@ router.post('/', authenticateToken, async (req, res) => {
         name: conversationName,
     })
     conversation.addUsers(users);
-    return res.json(conversation);
+    return res.redirect(`/conversation/${conversation.id}`);
 })
 
 router.put('/:id?', authenticateToken, async (req, res) => {
