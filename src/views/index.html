@@ -7,18 +7,18 @@
     <div class="center w-100 h-100 ma1 w-75-ns h-75-ns ba bw1 b--gray br4 overflow-hidden flex flex-column">
         <h2 class="bg-light-red ph2 pv3 ma0">Chats</h2>
         <div class="flex" style="flex-grow: 1;">
-            <div id="conversation-pane" class="w-20 h-100 db-ns dn bg-washed-red br bw1 b--gray">
+            <div id="conversation-pane" class="w-30 h-100 db-ns dn bg-washed-red br bw1 b--gray relative">
                 {% for conversation in conversations %}
                     <div class="pa2 bb">{{ conversation.name }}</div>
                 {% else %}
                     <div class="pa2"><em>No conversations</em></div>
                 {% endfor %}
+                <button class="pointer bg-light-red button-reset bn br-100 flex items-center justify-center h3 w3 shadow-2 absolute bottom-1 right-1">
+                    <span class="material-icons">add</span>
+                </button>
             </div>
-            <div id="chat-pane" class="w-100 h-100 pa2 relative">
+            <div id="chat-pane" class="w-100 h-100 pa2">
                 Chat pane goes here, but how??
-            <button class="pointer bg-light-red button-reset bn br-100 flex items-center justify-center h3 w3 shadow-2 absolute bottom-1 right-1">
-                <span class="material-icons">add</span>
-            </button>
             </div>
         </div>
     </div>
