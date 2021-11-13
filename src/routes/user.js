@@ -7,6 +7,11 @@ const User = sequelize.models.User;
 
 // CRUD 
 
+router.get('/current', authenticateToken, async (req, res) => {
+    // Returns the current user
+    return res.json(req.jwtPayload.user);
+})
+
 router.get('/:id', authenticateToken, async (req, res) => {
     // Read a user
     const users = await User.findByPk(req.params.id);
