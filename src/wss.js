@@ -27,13 +27,14 @@ wss.on('connection', (ws) => {
             let response;
             switch (msgJson.type) {
                 case 'new-message':
+                    console.log(msgJson.contents);
                     const message = await Message.create({
                         text: msgJson.contents.text,
                         sentAt: msgJson.contents.sentAt,
                         size: msgJson.contents.size,
                     });
-                    message.setUser(msgJson.contents.UserId);
-                    message.setConversation(msgJson.contents.ConversationId);
+                    message.setUser(msgJson.contents.userId);
+                    message.setConversation(msgJson.contents.conversationId);
                     await message.save();
                     response = {
                         type: 'message',
