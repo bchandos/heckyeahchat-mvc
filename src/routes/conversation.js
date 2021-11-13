@@ -16,8 +16,9 @@ router.get('/:id', authenticateToken, async (req, res) => {
     const user = await User.findByPk(userId);
     const conversations = await user.getConversations();
     const conversation = await Conversation.findByPk(req.params.id);
+    const messages = await conversation.getMessages();
     // return res.json(conversations);
-    return res.render('chat-pane.html', { conversation, user, conversations });
+    return res.render('chat-pane.html', { conversation, user, conversations, messages });
 })
 
 router.post('/', authenticateToken, async (req, res) => {
