@@ -18,12 +18,18 @@ const getCookie = (cName) => {
 
 // Event handlers
 const toggleUserMenu = (e) => {
-    const btn = e.currentTarget;
+    // Do not assume button is event target, as the underlay can fire this event
+    const btn = document.getElementById('account-btn');
+    const menuElems = document.querySelectorAll('div.menu-show');
     if (btn.dataset.state === 'closed') {
-        btn.nextElementSibling.style.display = 'block';
+        for (let elem of menuElems) {
+            elem.style.display = 'block';
+        }
         btn.dataset.state = 'open';
     } else {
-        btn.nextElementSibling.style.display = 'none';
+        for (let elem of menuElems) {
+            elem.style.display = 'none';
+        }
         btn.dataset.state = 'closed';
     }
 }
@@ -53,6 +59,7 @@ const submitOnEnter = (e) => {
 
 // Attach event handlers
 document.getElementById('account-btn').addEventListener('click', toggleUserMenu);
+document.getElementById('menu-underlay').addEventListener('click', toggleUserMenu);
 document.getElementById('post-message').addEventListener('submit', postMessage);
 ws.addEventListener('message', (e) => {
     console.log('Message received!');

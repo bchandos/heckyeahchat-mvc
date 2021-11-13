@@ -9,12 +9,13 @@
                 <button id="account-btn" class="bn bg-transparent link dim white dib mr3" data-state="closed">
                     <i class="material-icons">account_circle</i>
                 </button>
-                <div class="w4 dn absolute mr2 bg-light-gray top-2 right-0 ba shadow-1 z1">
+                <div class="menu-show w4 dn absolute mr2 bg-light-gray top-2 right-0 ba shadow-1 z-2">
                     <a href="" class="db pl1 pv2 no-underline black hover-bg-washed-blue bg-animate">Settings</a>
-                    <a href="" class="db pl1 pv2 no-underline black hover-bg-washed-blue bg-animate">Something</a>
+                    <a href="" class="db pl1 pv2 no-underline black hover-bg-washed-blue bg-animate">About</a>
                     <a href="/logout" class="db pl1 pv2 no-underline black hover-bg-washed-blue bg-animate">Logout</a>
                 </div>
             </div>
+            <div id="menu-underlay" class="menu-show w-100 h-100 dn absolute top-0 left-0 z-1"></div>
         {% endif %}
     </nav>
 </header>
