@@ -5,14 +5,16 @@
 {% block content %}
 {% include 'web-templates.html' %}
 {% set conv_styles = 'db-ns dn' if conversation else '' %}
-{% set head_styles = 'di-ns dn' if conversation else '' %}
 <main class="h-100 flex flex-column justify-center bg-light-gray">
     <div class="center w-100 h-100 w-75-ns h-75-ns ba b--gray flex flex-column">
-        <h2 class="bg-light-red ph2 pv3 ma0 {{head_styles}}">
+        <h2 class="bg-light-red ph2 pv3 ma0 dn di-ns">
             <span>Chats</span>
         </h2>
         <div class="flex overflow-hidden" style="flex-grow: 1;">
-            <div id="conversation-pane" class="w-100 w-30-ns h-100 bg-washed-red br b--gray relative {{ conv_styles }}">
+            <div id="conversation-pane" class="w-100 w-30-ns h-100 bg-washed-red br-ns b--gray relative {{ conv_styles }}">
+                <h2 class="bg-light-red ph2 pv3 ma0 dn-ns db">
+                    <span>Chats</span>
+                </h2>
                 {% for conversation in conversations %}
                     <a href="/conversation/{{conversation.id}}" class="f4 f5-ns db pa2 bb b--gray no-underline black">
                         {{ conversation.name }}
