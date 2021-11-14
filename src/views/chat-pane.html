@@ -1,4 +1,7 @@
 {% extends "index.html" %}
+{% block header_adds %}
+    <script src="/js/chat-pane.js" type="module" defer></script>
+{% endblock %}
 {% block chatpane %}
 <div id="chat-pane" class="w-100 h-100 flex flex-column">
     <div id="message-view" class="w-100 overflow-x-hidden">
