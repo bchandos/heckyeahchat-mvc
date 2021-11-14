@@ -34,7 +34,7 @@ export class MessagePane extends HTMLElement {
         const timeSpan = document.createElement('span');
         textSpan.setAttribute('slot', 'message-text');
         timeSpan.setAttribute('slot', 'message-time');
-        textSpan.textContent = data.contents.text;
+        textSpan.innerHTML = data.contents.text.replace('\n', '<br>');
         timeSpan.textContent = data.contents.sentAtPrettyTime;
         newMsg.append(textSpan, timeSpan);
         this.shadowRoot.append(newMsg);
@@ -61,9 +61,6 @@ export class MessageBubble extends HTMLElement {
         const container = this.shadowRoot.querySelector('div');
         const bubble = container.querySelector('span');
 
-        // // container.classList.add('flex', 'flex-row');
-        // // const bubble = document.createElement('span');
-        // // bubble.classList.add('ph2', 'pv4', 'ma2', 'w-33', 'br4');
         if (whom === 'self') {
             bubble.classList.add('bg-light-blue');
             container.classList.add('justify-end')
@@ -71,13 +68,5 @@ export class MessageBubble extends HTMLElement {
             bubble.classList.add('bg-light-green');
             container.classList.add('justify-start')
         }
-        // const contentSpan = document.createElement('span');
-        // const timeSpan = document.createElement('span');
-        // contentSpan.setAttribute('slot', 'message-text');
-        // timeSpan.setAttribute('slot', 'message-time');
-        // contentSpan.textContent = this.dataset.contents;
-        // timeSpan.textContent = this.dataset.time;
-        // bubble.append(contentSpan, timeSpan);
-        // // this.dataset.contents = null;
     }
 }
