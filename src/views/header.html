@@ -1,5 +1,10 @@
 <header class="bg-light-red w-100 ph2 pv2">
     <nav class="flex items-center justify-between">
+        {% if user %}
+            <button id="responsive-menu-btn" class="di dn-ns pointer bn bg-transparent">
+                <span class="material-icons">menu</span>
+            </button>
+        {% endif %}
         <a href="/" class="link dim white dib mr3">
             <img src="/image/rex.svg" alt="Heck Yeah Chat logo" class="w2 h2 v-mid">
             <span class="di-ns dn fw6">Heck Yeah, Chat!</span>
