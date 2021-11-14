@@ -69,6 +69,14 @@ wss.on('connection', (ws) => {
                         }),
                     };
                     break;
+                case 'delete-message':
+                    const delMessage = await Message.findByPk(msgJson.contents.messageId);
+                    await delMessage.destroy();
+                    response = {
+                        type: 'delete-message',
+                        contents: { messageId: delMessage.id }
+                    }
+                    break;
                 }
 
             for (let client of wss.clients) {

@@ -3,15 +3,9 @@ export class MessagePane extends HTMLElement {
         // Always call super first in constructor
         super();
         this.attachShadow({ mode: 'open' });
-        const wrapper = document.createElement('div');
-        const style = document.createElement('link');
-        const slot = document.createElement('slot');
-        slot.setAttribute('name', 'existing-msgs');
-        style.setAttribute('rel', 'stylesheet');
-        style.setAttribute('href', 'https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css')
-        wrapper.classList.add('pa1');
-        wrapper.appendChild(slot);
-        this.shadowRoot.append(style, wrapper);
+        const template = document.getElementById('message-pane-template').content;
+        const wrapper = template.cloneNode(true);
+        this.shadowRoot.append(wrapper);
     }
 
     async connectedCallback() {
@@ -29,6 +23,7 @@ export class MessagePane extends HTMLElement {
             // console.log('Message from another user!')
             newMsg.dataset.whom = 'other';
         }
+        newMsg.dataset.msgId = data.contents.id;
         newMsg.setAttribute('slot', 'existing-msgs');
         const textSpan = document.createElement('span');
         const timeSpan = document.createElement('span');
@@ -40,6 +35,21 @@ export class MessagePane extends HTMLElement {
         this.shadowRoot.append(newMsg);
         newMsg.scrollIntoView({ behavior: 'smooth'});
     }
+
+    removeMessage(data) {
+        // If the message was added to the page during templating it will be available via
+        // document, but not the shadowRoot. The opposite is true if the message was added
+        // using addMessage. This might be a problem, but here's a quick solutions...
+        const deletedElem = (
+            document.querySelector(`message-bubble[data-msg-id="${data.contents.messageId}"]`) ||
+            this.shadowRoot.querySelector(`message-bubble[data-msg-id="${data.contents.messageId}"]`)
+        );
+        deletedElem.style.transition = 'opacity 200ms ease-out';
+        deletedElem.style.opacity = 0;
+        deletedElem.addEventListener('transitionend', (e) => {
+            e.target.remove();
+        })
+    }
 }
 
 
@@ -47,13 +57,10 @@ export class MessageBubble extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-        const style = document.createElement('link');
-        style.setAttribute('rel', 'stylesheet');
-        style.setAttribute('href', 'https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css')
         // const wrapper = document.createElement('div');
         const template = document.getElementById('message-bubbble-template').content;
         const wrapper = template.cloneNode(true);
-        this.shadowRoot.append(style, wrapper);
+        this.shadowRoot.append(wrapper);
     }
 
     connectedCallback() {

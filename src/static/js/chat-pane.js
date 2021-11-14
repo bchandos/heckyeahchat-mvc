@@ -63,6 +63,19 @@ const submitOnEnter = (e) => {
     textarea.setAttribute("rows", rows);
 }
 
+
+const delMessage = async (e) => {
+    if (e.originalTarget instanceof HTMLButtonElement && e.originalTarget.classList.contains('msg-del-btn')) {
+        const bubble = e.originalTarget.parentNode.parentNode.host;
+        const messageId = bubble.dataset.msgId;
+        ws.send(JSON.stringify({
+            token: getCookie('jwt'),
+            type: 'delete-message',
+            contents: { messageId }
+        }));
+    }
+}
+
 // Attach event handlers
 
 // Track multiple key presses so that Shift+Enter will work in textarea
@@ -78,9 +91,13 @@ document.addEventListener('keyup', (event) => {
 
 document.getElementById('post-message').addEventListener('submit', postMessage);
 ws.addEventListener('message', (e) => {
-    console.log('Message received!');
-    console.log(e);
-    document.getElementById('message-pane').addMessage(e, currentUser.id)
+    // console.log('Message received!');
+    const data = JSON.parse(e.data);
+    if (data.type === 'message') {
+        document.getElementById('message-pane').addMessage(e, currentUser.id);
+    } else if (data.type === 'delete-message') {
+        document.getElementById('message-pane').removeMessage(data);
+    }
 })
 
 document.getElementById('new-message').addEventListener('keydown', submitOnEnter);
@@ -91,3 +108,6 @@ customElements.define('message-bubble', MessageBubble);
 
 // Scroll
 document.querySelector('message-bubble.last-of-my-kind').scrollIntoView({ behavior: 'smooth' });
+
+// Delegated event handler for delete button, so newly added messages work
+document.getElementById('chat-pane').addEventListener('click', delMessage);

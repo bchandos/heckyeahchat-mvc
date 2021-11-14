@@ -11,6 +11,7 @@
                     slot="existing-msgs" 
                     data-whom="{{'self' if msg.UserId==user.id else 'other'}}" 
                     class="{{'last-of-my-kind' if loop.last else ''}}"
+                    data-msg-id="{{msg.id}}"
                 >
                     <span slot="message-text">{{msg.text | replace('\n', '<br>') | safe}}</span>
                     <span slot="message-time">{{msg.sentAtPrettyTime}}</span>

@@ -40,7 +40,7 @@ router.delete('/:id?', authenticateToken, async (req, res) => {
     const messageId = req.params.id || req.body.id;
     const message = await Message.findByPk(messageId);
     await message.destroy();
-    return res.json(`Message with id ${req.body.id} destroyed`);
+    return res.json({ deletedId: messageId });
 })
 
 // Other routes

@@ -1,5 +1,8 @@
 <template id="message-bubbble-template">
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css">
     <div class="flex flex-row">
+        <!-- Temporary delete button -->
+        <button class="msg-del-btn bn bg-transparent pointer flex-shrink">X</button>
         <span class="ph2 pt2 pb1 ma2 w-75 br4">
             <div class="pv1">
                 <slot name="message-text"></slot>
@@ -8,5 +11,13 @@
                 <slot name="message-time"></slot>
             </div>
         </span>
+    </div>
+</template>
+
+<template id="message-pane-template">
+    <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css">
+    <div class="pa1">
+        <div id="first-msg-marker"></div>
+        <slot name="existing-msgs"></slot>
     </div>
 </template>
