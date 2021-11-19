@@ -16,9 +16,21 @@ router.get('/:id', authenticateToken, async (req, res) => {
     const user = await User.findByPk(userId);
     const conversations = await user.getConversations();
     const conversation = await Conversation.findByPk(req.params.id);
-    const messages = await conversation.getMessages({ limit: 20, order: [['sentAt', 'DESC']] });
-    // return res.json(conversations);
-    return res.render('chat-pane.html', { conversation, user, conversations, messages: messages.reverse() });
+    const reactionTypes = await ReactionType.findAll({ limit: 5});
+    const messages = await conversation.getMessages({ 
+        limit: 20, 
+        order: [['sentAt', 'DESC']], 
+        include: [
+            { model: Reaction, include: [ ReactionType ]}
+        ] 
+    });
+    return res.render('chat-pane.html', { 
+        conversation, 
+        user, 
+        conversations, 
+        messages: messages.reverse(),
+        reactionTypes
+    });
 })
 
 router.post('/', authenticateToken, async (req, res) => {

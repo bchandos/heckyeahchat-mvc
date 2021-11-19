@@ -32,7 +32,7 @@ export class MessagePane extends HTMLElement {
         textSpan.innerHTML = data.contents.text.replace('\n', '<br>');
         timeSpan.textContent = data.contents.sentAtPrettyTime;
         newMsg.append(textSpan, timeSpan);
-        this.shadowRoot.append(newMsg);
+        this.append(newMsg);
         newMsg.scrollIntoView({ behavior: 'smooth'});
     }
 
@@ -67,6 +67,7 @@ export class MessageBubble extends HTMLElement {
         const whom = this.dataset.whom;
         const container = this.shadowRoot.querySelector('div');
         const bubble = container.querySelector('span');
+        let clickTimeout = null;
 
         if (whom === 'self') {
             bubble.classList.add('bg-light-blue');
@@ -74,6 +75,84 @@ export class MessageBubble extends HTMLElement {
         } else if (whom === 'other') {
             bubble.classList.add('bg-light-green');
             container.classList.add('justify-start')
+        }
+        // Fire custom event on deletion button click
+        this.shadowRoot.querySelector('button.msg-del-btn').addEventListener('click', () => {
+            this.dispatchEvent(new CustomEvent(
+                'deleteMessage', 
+                { 
+                    detail: { 
+                        messageId: this.dataset.msgId 
+                    },
+                    bubbles: true
+                }
+            ));
+        })
+        // Fire custom event on message context button
+        this.shadowRoot.querySelector('button.message-btn').addEventListener('click', () => {
+            // console.log(this);
+            this.dispatchEvent(new CustomEvent(
+                'messageMenu', 
+                { 
+                    detail: { 
+                        messageId: this.dataset.msgId 
+                    },
+                    bubbles: true
+                }
+            ));
+        });
+        // Fire custom event when underlay div is clicked - appears only when menu is open
+        this.shadowRoot.querySelector('.message-menu-underlay').addEventListener('click', () => {
+            // console.log(this);
+            this.dispatchEvent(new CustomEvent(
+                'messageMenu', 
+                { 
+                    detail: { 
+                        messageId: this.dataset.msgId 
+                    },
+                    bubbles: true
+                }
+            ));
+        });
+        // For press and hold, set a timeout that will dispatch the custom menu event
+        // after 500ms
+        bubble.addEventListener('mousedown', (e) => {
+            if (!e.target.classList.contains('message-icon')) {
+                clickTimeout = setTimeout( () => {
+                    this.dispatchEvent(new CustomEvent(
+                        'messageMenu', 
+                        { 
+                            detail: { 
+                                messageId: this.dataset.msgId 
+                            },
+                            bubbles: true
+                        }
+                    ));
+                }, 500);
+            }
+        });
+        // When mouse button is released, clear the timeout for opening the menu
+        bubble.addEventListener('mouseup', (e) => {
+            clearTimeout(clickTimeout);
+        });
+
+        // Reaction click
+        const reactionBtns = this.shadowRoot.querySelector('slot[name="reaction-types"]').assignedElements();
+        
+        for (let reactionBtn of Array.from(reactionBtns)) {
+            reactionBtn.addEventListener('click', (e) => {
+                const btn = e.currentTarget;
+                this.dispatchEvent(new CustomEvent(
+                    'reaction',
+                    {
+                        detail: {
+                            reactionId: btn.dataset.reactionId,
+                            messageId: this.dataset.msgId,
+                        },
+                        bubbles: true
+                    }
+                ))
+            })
         }
     }
 }

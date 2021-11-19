@@ -1,12 +1,13 @@
 // chat-pane.js contains code specific to the chat pane template
 
-import { MessagePane, MessageBubble } from './web-components.js';
+// import { MessagePane, MessageBubble } from './web-components.js';
 
 const ws = new WebSocket('ws://localhost:5000');
 
 const currentUserResp = await fetch('/user/current');
 const currentUser = await currentUserResp.json();
 
+// Utilities
 const getCookie = (cName) => {
     const name = `${cName}=`;
     const cDecoded = decodeURIComponent(document.cookie); //to be careful
@@ -18,6 +19,19 @@ const getCookie = (cName) => {
     return res
 }
 
+const delegator = (parentSelector, childSelector, eventName, callback) => {
+    const parents = document.querySelectorAll(parentSelector);
+    for (let parent of parents) {
+        parent.addEventListener(eventName, (e) => {
+            // console.log(e.target);
+            if (e.target.matches(childSelector)) {
+                callback(e);
+            }
+        })
+    }
+}
+
+// End Utilities
 // Event handlers
 const postMessage = async (e) => {
     e.preventDefault();
@@ -63,17 +77,50 @@ const submitOnEnter = (e) => {
     textarea.setAttribute("rows", rows);
 }
 
-
 const delMessage = async (e) => {
-    if (e.originalTarget instanceof HTMLButtonElement && e.originalTarget.classList.contains('msg-del-btn')) {
-        const bubble = e.originalTarget.parentNode.parentNode.host;
-        const messageId = bubble.dataset.msgId;
-        ws.send(JSON.stringify({
-            token: getCookie('jwt'),
-            type: 'delete-message',
-            contents: { messageId }
-        }));
+    // console.log(e);
+    const messageId = e.target.closest('div.message-row').dataset.messageId;
+    ws.send(JSON.stringify({
+        token: getCookie('jwt'),
+        type: 'delete-message',
+        contents: { messageId }
+    }));
+}
+
+const toggleMessageMenu = (e) => {
+    let bubble;
+    if (e.currentTarget.matches('#message-menu-underlay')) {
+        const openMenu = document.querySelector('button.message-menu-btn[data-state="open"]');
+        bubble = openMenu.closest('div.message-row');
+    } else {
+        bubble = e.target.closest('div.message-row');
     }
+    const menuBtn = bubble.querySelector('.message-menu-btn');
+    const menuElem = bubble.querySelector('.message-menu');
+    const underlay = document.getElementById('message-menu-underlay');
+    // console.log(bubble, menuBtn, menuElem);
+    if (menuBtn.dataset.state === 'closed') {
+        menuBtn.classList.remove('child');
+        menuElem.classList.remove('dn');
+        underlay.classList.remove('dn');
+        menuBtn.dataset.state = 'open';
+    } else {
+        menuBtn.classList.add('child');
+        menuElem.classList.add('dn');
+        underlay.classList.add('dn');
+        menuBtn.dataset.state = 'closed';
+    }
+}
+
+const reactToMessage = (e) => {
+    // console.log(e.target);
+    const messageId = e.target.closest('div.message-row').dataset.messageId;
+    const reactionId = e.target.dataset.reactionId;
+    ws.send(JSON.stringify({
+        token: getCookie('jwt'),
+        type: 'new-reaction',
+        contents: { messageId, reactionId, userId: currentUser.id }
+    }));
 }
 
 // Attach event handlers
@@ -94,20 +141,51 @@ ws.addEventListener('message', (e) => {
     // console.log('Message received!');
     const data = JSON.parse(e.data);
     if (data.type === 'message') {
-        document.getElementById('message-pane').addMessage(e, currentUser.id);
+        if (data.contents.newMessage.UserId === currentUser.id) {
+            document.getElementById('message-view').insertAdjacentHTML('beforeend', data.contents.self);
+        } else {
+            document.getElementById('message-view').insertAdjacentHTML('beforeend', data.contents.other);
+        }
+        document.getElementById('bottom-marker').scrollIntoView({ behavior: 'smooth'});
     } else if (data.type === 'delete-message') {
-        document.getElementById('message-pane').removeMessage(data);
+        const deletedElem = document.querySelector(`div.message-row[data-message-id="${data.contents.messageId}"]`);
+        deletedElem.style.transition = 'opacity 200ms ease-out';
+        deletedElem.style.opacity = 0;
+        deletedElem.addEventListener('transitionend', (e) => {
+            e.target.remove();
+            document.getElementById('message-menu-underlay').classList.add('dn');
+        });
+    } else if (data.type === 'reaction') {
+        const updatedElem = document.querySelector(`div.message-row[data-message-id="${data.contents.newReactionMsg.id}"]`);
+        const previousMsg = updatedElem.previousElementSibling;
+        if (previousMsg) {
+            updatedElem.remove();
+            if (data.contents.newReactionMsg.UserId === currentUser.id) {
+                previousMsg.insertAdjacentHTML('afterend', data.contents.self);
+            } else {
+                previousMsg.insertAdjacentHTML('afterend', data.contents.other);
+            }
+        }
+        document.getElementById('message-menu-underlay').classList.add('dn');
     }
 })
 
 document.getElementById('new-message').addEventListener('keydown', submitOnEnter);
 
+delegator('#chat-pane', '.message-icon', 'click', toggleMessageMenu);
+delegator('#chat-pane', '.msg-del-btn', 'click', delMessage);
+delegator('#chat-pane', '.msg-react-btn', 'click', reactToMessage);
+
+document.getElementById('message-menu-underlay').addEventListener('click', toggleMessageMenu);
+
+// Delegated event handler for buttons, so newly added messages work
+// document.getElementById('chat-pane').addEventListener('deleteMessage', delMessage);
+// document.getElementById('chat-pane').addEventListener('messageMenu', toggleMessageMenu);
+// document.getElementById('chat-pane').addEventListener('reaction', reactToMessage);
+
 // Web Components
-customElements.define('message-pane', MessagePane);
-customElements.define('message-bubble', MessageBubble);
+// customElements.define('message-pane', MessagePane);
+// customElements.define('message-bubble', MessageBubble);
 
 // Scroll
-document.querySelector('message-bubble.last-of-my-kind').scrollIntoView({ behavior: 'smooth' });
-
-// Delegated event handler for delete button, so newly added messages work
-document.getElementById('chat-pane').addEventListener('click', delMessage);
+document.querySelector('.last-of-my-kind').scrollIntoView({ behavior: 'smooth' });

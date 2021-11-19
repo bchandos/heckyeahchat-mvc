@@ -11,7 +11,11 @@ const reactionType = (sequelize, Model, DataTypes) => {
       },
       image: {
           type: DataTypes.STRING,
-          allowNull: false
+          allowNull: true
+      },
+      unicode: {
+        type: DataTypes.STRING,
+        allowNull: true
       }
     }, {
       sequelize,

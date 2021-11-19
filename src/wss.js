@@ -1,5 +1,6 @@
 const { Server } = require('ws');
 const { authenticateWebsocket } = require('./jwt');
+const nj = require('nunjucks');
 const sequelize = require('./models');
 
 const Message = sequelize.models.Message;
@@ -13,6 +14,7 @@ wss.on('connection', (ws) => {
     console.log('Websocket client connected');
     // ws.send(JSON.stringify({'msg': 'You have connected to the websocket'}));
     ws.on('message', async (msg) => {
+        const reactionTypes = await ReactionType.findAll({ limit: 5});
         const msgJson = JSON.parse(msg);
         let authenticated;
         if (msgJson.token) {
@@ -27,7 +29,6 @@ wss.on('connection', (ws) => {
             let response;
             switch (msgJson.type) {
                 case 'new-message':
-                    console.log(msgJson.contents);
                     const message = await Message.create({
                         text: msgJson.contents.text,
                         sentAt: msgJson.contents.sentAt,
@@ -36,37 +37,52 @@ wss.on('connection', (ws) => {
                     message.setUser(msgJson.contents.userId);
                     message.setConversation(msgJson.contents.conversationId);
                     await message.save();
+                    const newMessage = await Message.findByPk(message.id, {
+                        include: [
+                            User, 
+                            {
+                                model: Reaction,
+                                include: [ReactionType],
+                            },
+                        ],
+                    });
+                    // Include in the response the message so the User ID can be compared
+                    // to the current user on the client side, which determines whether to
+                    // append "self" version of message, or "other" version
                     response = {
                         type: 'message',
-                        contents: await Message.findByPk(message.id, {
-                            include: [
-                                User, 
-                                {
-                                    model: Reaction,
-                                    include: [ReactionType],
-                                },
-                            ],
-                        }),
+                        contents: {
+                            newMessage,
+                            self: nj.render('message-bubble.html', { msg: newMessage, user: newMessage.User, reactionTypes }),
+                            other: nj.render('message-bubble.html', { msg: newMessage, reactionTypes }),
+                        },
                     };
                     break;
                 case 'new-reaction':
                     const reaction = await Reaction.create({
                         reactedAt: msgJson.contents.reactedAt,
                     });
-                    reaction.setUser(msgJson.contents.UserId);
-                    reaction.setReactionType(msgJson.contents.reactionTypeId);
+                    reaction.setUser(msgJson.contents.userId);
+                    reaction.setReactionType(msgJson.contents.reactionId);
+                    reaction.setMessage(msgJson.contents.messageId);
                     await reaction.save();
+                    const newReactionMsg = await Message.findByPk(msgJson.contents.messageId, {
+                        include: [
+                            User, 
+                            {
+                                model: Reaction,
+                                include: [ReactionType],
+                            },
+                        ],
+                    });
                     response = {
                         type: 'reaction',
-                        contents: await Message.findByPk(reaction.id, { 
-                            include: [
-                                User, 
-                                {
-                                    model: Reaction,
-                                    include: [ReactionType],
-                                },
-                            ],
-                        }),
+                        contents: {
+                            newReactionMsg,
+                            self: nj.render('message-bubble.html', { msg: newReactionMsg, user: newReactionMsg.User, reactionTypes }),
+                            other: nj.render('message-bubble.html', { msg: newReactionMsg, reactionTypes }),
+                            reactionTypes,
+                        },
                     };
                     break;
                 case 'delete-message':

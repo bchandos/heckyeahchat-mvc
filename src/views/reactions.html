@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}HYC - Create Reactions{% endblock %}
+
+{% block content %}
+<main class="flex flex-column justify-center h-100 bg-light-gray">
+    <form class="measure center pa4 ba br3 shadow-2 bg-white ma2" method="POST" action="/reaction">
+        <fieldset id="sign_up" class="ba b--transparent ph0 mh0">
+            <legend class="f4 fw6 ph0 mh0">Create New Reaction Type</legend>
+            <div class="mt3">
+                <label class="db fw6 lh-copy " for="email-address">Name</label>
+                <input class="pa2 input-reset ba w-100" type="text" name="name" id="name">
+            </div>
+            <div class="mt3">
+                <label class="db fw6 lh-copy " for="email-address">Description</label>
+                <input class="pa2 input-reset ba w-100" type="text" name="description" id="description">
+            </div>
+            <div class="mt3">
+                <label class="db fw6 lh-copy " for="email-address">Unicode</label>
+                <input class="pa2 input-reset ba w-100" type="text" name="unicode" id="unicode">
+            </div>
+            <div class="mt3">
+                <label class="db fw6 lh-copy " for="email-address">Image URL</label>
+                <input class="pa2 input-reset ba w-100" type="text" name="image-url" id="image-url">
+            </div>
+        </fieldset>
+        <div class="">
+            <button class="b ph3 pv2 input-reset ba b--black br2 pointer hover-bg-light-red w-100 bg-animate" type="submit">Submit</button>
+        </div>
+    </form>
+</main>
+
+{% endblock %}

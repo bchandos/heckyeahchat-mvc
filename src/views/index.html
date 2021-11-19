@@ -22,9 +22,9 @@
                 {% else %}
                     <div class="pa2"><em>No conversations</em></div>
                 {% endfor %}
-                <button id="add-conversation-btn" class="pointer bg-light-red button-reset bn br-100 flex items-center justify-center h3 w3 shadow-2 absolute bottom-1 right-1">
+                <a id="add-conversation-btn" class="link black hover-dark-gray bg-light-red bn br-100 flex items-center justify-center h3 w3 shadow-2 absolute bottom-1 right-1" href="/new-conversation">
                     <span class="material-icons">add</span>
-                </button>
+                </a>
             </div>
             {% block chatpane %}
                 <div id="chat-pane" class="w-100 h-100 pa2 dn db-ns">

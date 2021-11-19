@@ -57,11 +57,13 @@ QuotedMessage.belongsTo(Message);
 User.hasMany(Reaction);
 Reaction.belongsTo(User);
 
+Reaction.belongsTo(ReactionType)
+
 // Many to Many
 User.belongsToMany(Conversation, { through: 'UserConversations' });
 Conversation.belongsToMany(User, { through: 'UserConversations' });
 
 // One to one
-Reaction.hasOne(ReactionType);
+// Reaction.hasOne(ReactionType);
 
 module.exports = sequelize;

@@ -1,17 +1,39 @@
 <template id="message-bubbble-template">
     <link rel="stylesheet" href="https://unpkg.com/tachyons@4.12.0/css/tachyons.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <div class="flex flex-row">
-        <!-- Temporary delete button -->
-        <button class="msg-del-btn bn bg-transparent pointer flex-shrink">X</button>
-        <span class="ph2 pt2 pb1 ma2 w-75 br4">
+        <span class="ph2 pt2 pb1 ma2 w-75 br4 relative hide-child">
             <div class="pv1">
                 <slot name="message-text"></slot>
             </div>
             <div class="f7 tr i">
                 <slot name="message-time"></slot>
             </div>
+            <button class="message-btn child bn bg-transparent pointer absolute right-0 top-0" data-state="closed">
+                <span class="material-icons message-icon">expand_more</span>
+            </button>
+            <div class="message-menu dn absolute mr2 mt1 br2 bg-light-gray top-1 right-0 ba shadow-1 z-2 overflow-hidden">
+                <div class="ph1 pv2 f4 bb b--gray">
+                    <slot name="reaction-types"></slot>
+                    <button class="msg-react-btn bn bg-transparent pointer ph1 o-60 glow">
+                        <span class="material-icons v-btm">more_vert</span>
+                    </button>
+                </div>
+                <button class="msg-reply-btn db w-100 tl pa2 bn bg-transparent pointer o-90 glow hover-bg-washed-blue bg-animate flex items-center">
+                    <span class="material-icons f5 pr1 0-90 glow">reply</span>
+                    Reply
+                </button>
+                <button class="msg-del-btn db w-100 tl pa2 bn bg-transparent pointer o-90 glow hover-bg-washed-blue bg-animate flex items-center">
+                    <span class="material-icons f5 pr1 0-90 glow">delete</span>
+                    Delete
+                </button>
+            </div>
+            <div class="reaction-pane h2 absolute bottom--1 left-1">
+                <slot name="reactions"></slot>
+            </div>
         </span>
     </div>
+    <div class="message-menu-underlay w-100 h-100 dn absolute top-0 left-0 z-1"></div>
 </template>
 
 <template id="message-pane-template">

@@ -90,9 +90,8 @@ const authenticateWebsocket = async (token) => {
     }
     try {
         const payload = await jwtVerify(token, process.env.TOKEN_SECRET);
-        req.jwtPayload = payload;
         console.log(`User ID ${payload.user.id} authenticated a Websocket with JWT, expires ${new Date(payload.exp*1000)}`);
-        return true;
+        return payload;
     } catch (err) {
         return false;
     }
