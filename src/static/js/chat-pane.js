@@ -9,6 +9,10 @@ const ws = new WebSocket('ws://localhost:5000');
 const currentUserResp = await fetch('/user/current');
 const currentUser = await currentUserResp.json();
 
+let typingTimeout = null;
+let typingStatus = false;
+let clickTimeout = null;
+
 // Event handlers
 const postMessage = async (e) => {
     e.preventDefault();
@@ -105,6 +109,36 @@ const reactToMessage = (e) => {
     }));
 }
 
+const typingIndicator = (e) => {
+    if (!typingStatus && !e.key.Enter) {
+        ws.send(JSON.stringify({
+            token: getCookie('jwt'),
+            type: 'typing-indicator',
+            contents: {
+                userId: currentUser.id,
+                typingStatus: 'on',
+                userName: currentUser.nickname,
+            }
+        }));
+        typingStatus = true;
+    } else {
+
+    }
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+        ws.send(JSON.stringify({
+            token: getCookie('jwt'),
+            type: 'typing-indicator',
+            contents: {
+                userId: currentUser.id,
+                typingStatus: 'off',
+                userName: currentUser.nickname,
+            }
+        }));
+        typingStatus = false;
+    }, 2000)
+}
+
 // Attach event handlers
 
 // Track multiple key presses so that Shift+Enter will work in textarea
@@ -120,6 +154,26 @@ document.addEventListener('keyup', (event) => {
 
 document.getElementById('post-message').addEventListener('submit', postMessage);
 
+document.getElementById('new-message').addEventListener('keydown', submitOnEnter);
+
+delegator('#chat-pane', '.message-icon', 'click', toggleMessageMenu);
+delegator('#chat-pane', '.msg-del-btn', 'click', delMessage);
+delegator('#chat-pane', '.msg-react-btn', 'click', reactToMessage);
+
+document.getElementById('message-menu-underlay').addEventListener('click', toggleMessageMenu);
+
+document.getElementById('new-message').addEventListener('keyup', typingIndicator);
+
+document.getElementById('typing-indicator').addEventListener('transitionend', (e) => {
+    if (e.target.dataset.state === 'open') {
+        e.target.innerText = '';
+        e.target.dataset.state = 'closed';
+    } else {
+        e.target.dataset.state = 'open';
+    }
+})
+
+// Websocket handling
 ws.addEventListener('message', (e) => {
     // console.log('Message received!');
     const data = JSON.parse(e.data);
@@ -143,25 +197,17 @@ ws.addEventListener('message', (e) => {
         const reactedElem = document.querySelector(`div.message-row[data-message-id="${data.contents.messageId}"]`);
         const reactionPane = reactedElem.querySelector('.reaction-pane');
         replacer(reactionPane, data.contents.newPane);
+    } else if (data.type === 'typing-on') {
+        if (data.contents.userId !== currentUser.id) {
+            const indicator = document.getElementById('typing-indicator');
+            indicator.innerHTML = `${data.contents.userName} is typing ...`;
+            indicator.classList.add('visible');
+        }
+    } else if (data.type === 'typing-off') {
+        const indicator = document.getElementById('typing-indicator');
+        indicator.classList.remove('visible');
     }
 })
-
-document.getElementById('new-message').addEventListener('keydown', submitOnEnter);
-
-delegator('#chat-pane', '.message-icon', 'click', toggleMessageMenu);
-delegator('#chat-pane', '.msg-del-btn', 'click', delMessage);
-delegator('#chat-pane', '.msg-react-btn', 'click', reactToMessage);
-
-document.getElementById('message-menu-underlay').addEventListener('click', toggleMessageMenu);
-
-// Delegated event handler for buttons, so newly added messages work
-// document.getElementById('chat-pane').addEventListener('deleteMessage', delMessage);
-// document.getElementById('chat-pane').addEventListener('messageMenu', toggleMessageMenu);
-// document.getElementById('chat-pane').addEventListener('reaction', reactToMessage);
-
-// Web Components
-// customElements.define('message-pane', MessagePane);
-// customElements.define('message-bubble', MessageBubble);
 
 // Scroll
 document.querySelector('.last-of-my-kind').scrollIntoView({ behavior: 'smooth' });

@@ -105,6 +105,20 @@ wss.on('connection', (ws) => {
                         contents: { messageId: delMessage.id }
                     }
                     break;
+                case 'typing-indicator':
+                    // const typingUser = await User.findByPk(msgJson.contents.userId);
+                    // 'on' or 'off'
+                    const typingStatus = msgJson.contents.typingStatus;
+                    respType = `typing-${typingStatus}`;
+                    response = {
+                        type: respType,
+                        contents: {
+                            userName: msgJson.contents.userName,
+                            userId: msgJson.contents.userId,
+                        }
+                    }
+                    // console.log(response);
+                    break;
                 }
 
             for (let client of wss.clients) {

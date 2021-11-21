@@ -10,6 +10,10 @@
             {% endfor %}
         <span id="bottom-marker"></span>
     </div>
+    <div 
+        id="typing-indicator" 
+        data-state="closed" 
+        class="f6 bg-light-red w-100"></div>
     <form id="post-message" method="POST" class="w-100 bg-light-green pa2 flex flex-row items-center">
         <textarea class="w-100" name="text" id="new-message" rows="1" style="resize: none;"></textarea>
         <input type="hidden" name="size" value="1">

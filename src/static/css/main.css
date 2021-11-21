@@ -34,3 +34,13 @@ body {
 #message-view {
     flex-grow: 1;
 }
+
+#typing-indicator {
+    transition: height 100ms ease-in-out;
+    height: 0;
+}
+
+#typing-indicator.visible {
+    height: 1.375rem;
+    padding: 0.25em;
+}
