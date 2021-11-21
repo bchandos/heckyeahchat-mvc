@@ -2,36 +2,13 @@
 
 // import { MessagePane, MessageBubble } from './web-components.js';
 
+import { getCookie, delegator, replacer } from './utils.js';
+
 const ws = new WebSocket('ws://localhost:5000');
 
 const currentUserResp = await fetch('/user/current');
 const currentUser = await currentUserResp.json();
 
-// Utilities
-const getCookie = (cName) => {
-    const name = `${cName}=`;
-    const cDecoded = decodeURIComponent(document.cookie); //to be careful
-    const cArr = cDecoded.split('; ');
-    let res;
-    cArr.forEach(val => {
-      if (val.indexOf(name) === 0) res = val.substring(name.length);
-    })
-    return res
-}
-
-const delegator = (parentSelector, childSelector, eventName, callback) => {
-    const parents = document.querySelectorAll(parentSelector);
-    for (let parent of parents) {
-        parent.addEventListener(eventName, (e) => {
-            // console.log(e.target);
-            if (e.target.matches(childSelector)) {
-                callback(e);
-            }
-        })
-    }
-}
-
-// End Utilities
 // Event handlers
 const postMessage = async (e) => {
     e.preventDefault();
@@ -119,7 +96,12 @@ const reactToMessage = (e) => {
     ws.send(JSON.stringify({
         token: getCookie('jwt'),
         type: 'new-reaction',
-        contents: { messageId, reactionId, userId: currentUser.id }
+        contents: { 
+            messageId, 
+            reactionId, 
+            userId: currentUser.id,
+            reactedAt: new Date()
+        }
     }));
 }
 
@@ -156,17 +138,9 @@ ws.addEventListener('message', (e) => {
             document.getElementById('message-menu-underlay').classList.add('dn');
         });
     } else if (data.type === 'reaction') {
-        const updatedElem = document.querySelector(`div.message-row[data-message-id="${data.contents.newReactionMsg.id}"]`);
-        const previousMsg = updatedElem.previousElementSibling;
-        if (previousMsg) {
-            updatedElem.remove();
-            if (data.contents.newReactionMsg.UserId === currentUser.id) {
-                previousMsg.insertAdjacentHTML('afterend', data.contents.self);
-            } else {
-                previousMsg.insertAdjacentHTML('afterend', data.contents.other);
-            }
-        }
-        document.getElementById('message-menu-underlay').classList.add('dn');
+        const reactedElem = document.querySelector(`div.message-row[data-message-id="${data.contents.messageId}"]`);
+        const reactionPane = reactedElem.querySelector('.reaction-pane');
+        replacer(reactionPane, data.contents.newPane);
     }
 })
 

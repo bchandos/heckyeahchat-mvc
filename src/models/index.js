@@ -54,7 +54,7 @@ Attachment.belongsTo(Message);
 Message.hasMany(QuotedMessage);
 QuotedMessage.belongsTo(Message);
 
-User.hasMany(Reaction);
+User.hasMany(Reaction, { onDelete: 'CASCADE' });
 Reaction.belongsTo(User);
 
 Reaction.belongsTo(ReactionType)

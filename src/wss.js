@@ -38,11 +38,13 @@ wss.on('connection', (ws) => {
                     message.setConversation(msgJson.contents.conversationId);
                     await message.save();
                     const newMessage = await Message.findByPk(message.id, {
+                        order: [
+                            [Reaction, 'reactedAt', 'ASC'],
+                        ],
                         include: [
-                            User, 
                             {
                                 model: Reaction,
-                                include: [ReactionType],
+                                include: [ReactionType, { model: User, attributes: ['nickname'] }],
                             },
                         ],
                     });
@@ -66,22 +68,24 @@ wss.on('connection', (ws) => {
                     reaction.setReactionType(msgJson.contents.reactionId);
                     reaction.setMessage(msgJson.contents.messageId);
                     await reaction.save();
-                    const newReactionMsg = await Message.findByPk(msgJson.contents.messageId, {
-                        include: [
-                            User, 
-                            {
-                                model: Reaction,
-                                include: [ReactionType],
-                            },
+                    // const reactionType = await reaction.getReactionType();
+                    const reactedMessage = await reaction.getMessage({ 
+                        order: [
+                            [Reaction, 'reactedAt', 'ASC'],
                         ],
+                        include: [ 
+                            { 
+                                model: Reaction, 
+                                include: [ReactionType, { model: User, attributes: ['nickname'] }], 
+                            } 
+                        ]
                     });
+                    // console.log(reactedMessage.Reactions);
                     response = {
                         type: 'reaction',
                         contents: {
-                            newReactionMsg,
-                            self: nj.render('message-bubble.html', { msg: newReactionMsg, user: newReactionMsg.User, reactionTypes }),
-                            other: nj.render('message-bubble.html', { msg: newReactionMsg, reactionTypes }),
-                            reactionTypes,
+                            messageId: reactedMessage.id,
+                            newPane: nj.render('reaction-pane.html', { msg: reactedMessage })
                         },
                     };
                     break;

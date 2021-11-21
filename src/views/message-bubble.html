@@ -32,12 +32,6 @@
                 Delete
             </button>
         </div>
-        <div class="reaction-pane h2 absolute bottom--1 left-1">
-            {% for r in msg.Reactions %}
-                <span>
-                    &#x{{r.ReactionType.unicode}};
-                </span>
-            {% endfor %}
-        </div>
+        {% include "reaction-pane.html" %}
     </span>
 </div>

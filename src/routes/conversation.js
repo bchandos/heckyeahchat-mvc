@@ -19,9 +19,12 @@ router.get('/:id', authenticateToken, async (req, res) => {
     const reactionTypes = await ReactionType.findAll({ limit: 5});
     const messages = await conversation.getMessages({ 
         limit: 20, 
-        order: [['sentAt', 'DESC']], 
+        order: [
+            ['sentAt', 'DESC'],
+            [Reaction,'reactedAt', 'ASC'],
+        ], 
         include: [
-            { model: Reaction, include: [ ReactionType ]}
+            { model: Reaction, include: [ ReactionType, { model: User, attributes: ['nickname'] } ] }
         ] 
     });
     return res.render('chat-pane.html', { 

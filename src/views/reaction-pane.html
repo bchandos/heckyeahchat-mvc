@@ -1,0 +1,7 @@
+<div class="reaction-pane h2 absolute bottom--1 left-1">
+    {% for r in msg.Reactions %}
+        <span data-time="{{r.reactedAt}}" title="{{r.User.nickname}} reacted with {{r.ReactionType.description}}">
+            &#x{{r.ReactionType.unicode}};
+        </span>
+    {% endfor %}
+</div>
