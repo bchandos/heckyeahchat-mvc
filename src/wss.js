@@ -55,8 +55,16 @@ wss.on('connection', (ws) => {
                         type: 'message',
                         contents: {
                             newMessage,
-                            self: nj.render('message-bubble.html', { msg: newMessage, user: newMessage.User, reactionTypes }),
-                            other: nj.render('message-bubble.html', { msg: newMessage, reactionTypes }),
+                            self: nj.render('message-bubble.html', { 
+                                msg: newMessage, 
+                                user: { id: newMessage.UserId }, 
+                                reactionTypes 
+                            }),
+                            other: nj.render('message-bubble.html', 
+                            { 
+                                msg: newMessage, 
+                                reactionTypes 
+                            }),
                         },
                     };
                     break;

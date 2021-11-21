@@ -119,10 +119,12 @@ document.addEventListener('keyup', (event) => {
 });
 
 document.getElementById('post-message').addEventListener('submit', postMessage);
+
 ws.addEventListener('message', (e) => {
     // console.log('Message received!');
     const data = JSON.parse(e.data);
     if (data.type === 'message') {
+        console.log(data.contents.newMessage.UserId === currentUser.id);
         if (data.contents.newMessage.UserId === currentUser.id) {
             document.getElementById('message-view').insertAdjacentHTML('beforeend', data.contents.self);
         } else {
