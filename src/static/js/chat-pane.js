@@ -200,7 +200,10 @@ ws.addEventListener('message', (e) => {
     } else if (data.type === 'typing-on') {
         if (data.contents.userId !== currentUser.id) {
             const indicator = document.getElementById('typing-indicator');
-            indicator.innerHTML = `${data.contents.userName} is typing ...`;
+            indicator.innerHTML = `
+                ${data.contents.userName} is typing
+                <img src="/image/activity-dots.svg" alt="activity is happening" class="w2">
+            `;
             indicator.classList.add('visible');
         }
     } else if (data.type === 'typing-off') {

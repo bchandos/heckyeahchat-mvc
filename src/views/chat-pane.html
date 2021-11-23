@@ -10,21 +10,25 @@
             {% endfor %}
         <span id="bottom-marker"></span>
     </div>
-    <div 
-        id="typing-indicator" 
-        data-state="closed" 
-        class="f6 bg-light-red w-100"></div>
-    <form id="post-message" method="POST" class="w-100 bg-light-green pa2 flex flex-row items-center">
-        <textarea class="w-100" name="text" id="new-message" rows="1" style="resize: none;"></textarea>
-        <input type="hidden" name="size" value="1">
-        <input type="hidden" name="userId" value="{{user.id}}">
-        <input type="hidden" name="conversationId" value="{{conversation.id}}">
-        <button id="send-message-btn" type="submit" class="bn bg-transparent pointer">
-            <span class="material-icons mh2">send</span>
-        </button>
+    <form id="post-message" method="POST" class="relative">
+        <div class="w-100 bg-light-green pa2 flex flex-row items-center z-2 relative">
+            <textarea class="w-100" name="text" id="new-message" rows="1" style="resize: none;"></textarea>
+            <input type="hidden" name="size" value="1">
+            <input type="hidden" name="userId" value="{{user.id}}">
+            <input type="hidden" name="conversationId" value="{{conversation.id}}">
+            <button id="send-message-btn" type="submit" class="bn bg-transparent pointer">
+                <span class="material-icons mh2">send</span>
+            </button>
+        </div>
+        <div 
+            id="typing-indicator" 
+            data-state="closed" 
+            class="f6 pa1 bg-light-yellow w-100 absolute left-0 o-70 z-1"
+        >
+        </div>
     </form>
 </div>
-<div id="message-menu-underlay" class="w-100 h-100 dn absolute top-0 left-0 z-1"></div>
+<div id="message-menu-underlay" class="w-100 h-100 dn absolute top-0 left-0 z-4"></div>
 {% endblock %}
 
 
