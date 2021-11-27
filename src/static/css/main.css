@@ -43,3 +43,13 @@ body {
 #typing-indicator.visible {
     top: -1.375rem;
 }
+
+#post-message-box {
+    transition: height 150ms ease-in-out;
+}
+
+#reply-message {
+    transition: opacity 200ms ease-in-out;
+    background-color: rgba(255, 255, 123, 0.5);
+    max-height: 53.6px;
+}

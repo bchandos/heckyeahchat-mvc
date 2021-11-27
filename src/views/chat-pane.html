@@ -11,14 +11,21 @@
         <span id="bottom-marker"></span>
     </div>
     <form id="post-message" method="POST" class="relative">
-        <div class="w-100 bg-light-green pa2 flex flex-row items-center z-2 relative">
-            <textarea class="w-100" name="text" id="new-message" rows="1" style="resize: none;"></textarea>
-            <input type="hidden" name="size" value="1">
-            <input type="hidden" name="userId" value="{{user.id}}">
-            <input type="hidden" name="conversationId" value="{{conversation.id}}">
-            <button id="send-message-btn" type="submit" class="bn bg-transparent pointer">
-                <span class="material-icons mh2">send</span>
-            </button>
+        <div id="post-message-box" class="w-100 bg-light-green pa2 z-2 relative flex flex-column justify-end">
+            <div id="reply-message" class="w-100 h-100 overflow-hidden truncate ws-normal pa2 mb2 bl bw2 br3 b--gold dn o-0">
+                <span id="reply-contents" class="w-100"></span>
+                <button id="reply-remove" class="bn bg-transparent pointer pa2">X</button>
+            </div>
+            <div class="flex flex-row items-center">
+                <textarea class="w-100" name="text" id="new-message" rows="1" style="resize: none;"></textarea>
+                <input type="hidden" name="replyMsgId">
+                <input type="hidden" name="size" value="1">
+                <input type="hidden" name="userId" value="{{user.id}}">
+                <input type="hidden" name="conversationId" value="{{conversation.id}}">
+                <button id="send-message-btn" type="submit" class="bn bg-transparent pointer">
+                    <span class="material-icons mh2">send</span>
+                </button>
+            </div>
         </div>
         <div 
             id="typing-indicator" 

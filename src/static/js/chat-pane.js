@@ -94,7 +94,6 @@ const toggleMessageMenu = (e) => {
 }
 
 const reactToMessage = (e) => {
-    // console.log(e.target);
     const messageId = e.target.closest('div.message-row').dataset.messageId;
     const reactionId = e.target.dataset.reactionId;
     ws.send(JSON.stringify({
@@ -107,6 +106,44 @@ const reactToMessage = (e) => {
             reactedAt: new Date()
         }
     }));
+}
+
+const replyOpenTransition = (e) => {
+    if (e.target.matches('#post-message-box')) {
+        document.getElementById('reply-message').classList.add('flex');
+        document.getElementById('reply-message').clientWidth;
+        document.getElementById('reply-message').classList.remove('o-0');
+    }
+    msgBox.removeEventListener('transitionend', replyOpenTransition);
+}
+
+const replyToMessage = (e) => {
+    const msgRow = e.target.closest('.message-row'); 
+    const msgId = msgRow.dataset.messageId;
+    const msgContents = msgRow.querySelector('.message-contents').innerText;
+    const msgBox = document.getElementById('post-message-box');
+    msgBox.dataset.oldHeight = msgBox.style.height;
+    msgBox.addEventListener('transitionend', replyOpenTransition);
+    msgBox.style.height = '116px';
+    document.getElementById('reply-contents').innerHTML = msgContents;
+    document.getElementsByName('replyMsgId')[0].value = msgId;
+}
+
+const replyCloseTransition = (e) => {
+    if (e.target.matches('#reply-message')) {
+        document.getElementById('reply-contents').innerHTML = "";
+        msgBox.style.height = msgBox.dataset.oldHeight;
+        msgBox.dataset.oldHeight = null;
+        e.target.classList.remove('flex');
+    }
+    e.target.removeEventListener('transitionend', replyCloseTransition);
+}
+
+const clearReply = (e) => {
+    const replyMsg = document.getElementById('reply-message');
+    replyMsg.addEventListener('transitionend', replyCloseTransition);
+    replyMsg.classList.add('o-0');
+    document.getElementsByName('replyMsgId')[0].value = null;
 }
 
 const typingIndicator = (e) => {
@@ -159,10 +196,13 @@ document.getElementById('new-message').addEventListener('keydown', submitOnEnter
 delegator('#chat-pane', '.message-icon', 'click', toggleMessageMenu);
 delegator('#chat-pane', '.msg-del-btn', 'click', delMessage);
 delegator('#chat-pane', '.msg-react-btn', 'click', reactToMessage);
+delegator('#chat-pane', '.msg-reply-btn', 'click', replyToMessage);
 
 document.getElementById('message-menu-underlay').addEventListener('click', toggleMessageMenu);
 
 document.getElementById('new-message').addEventListener('keyup', typingIndicator);
+
+document.getElementById('reply-remove').addEventListener('click', clearReply);
 
 document.getElementById('typing-indicator').addEventListener('transitionend', (e) => {
     if (e.target.dataset.state === 'open') {
@@ -214,3 +254,7 @@ ws.addEventListener('message', (e) => {
 
 // Scroll
 document.querySelector('.last-of-my-kind').scrollIntoView({ behavior: 'smooth' });
+
+// Random
+const msgBox = document.getElementById('post-message-box');
+msgBox.style.height = `${msgBox.clientHeight}px`;
