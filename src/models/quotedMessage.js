@@ -1,11 +1,6 @@
 const quotedMessage = (sequelize, Model, DataTypes) => {
   class QuotedMessage extends Model {}
-    QuotedMessage.init({
-      quotedMessageId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      }
-    }, {
+    QuotedMessage.init({}, {
       sequelize,
       modelName: 'QuotedMessage'
     });

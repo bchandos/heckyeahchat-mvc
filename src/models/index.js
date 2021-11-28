@@ -26,7 +26,7 @@ const Conversation = conversation(sequelize, Model, DataTypes);
 const Reaction = reaction(sequelize, Model, DataTypes);
 const ReactionType = reactionType(sequelize, Model, DataTypes);
 const Attachment = attachment(sequelize, Model, DataTypes);
-const QuotedMessage = quotedMessage(sequelize, Model, DataTypes);
+// const QuotedMessage = quotedMessage(sequelize, Model, DataTypes);
 
 User.addScope('ordered', {
     order: [
@@ -51,8 +51,9 @@ Reaction.belongsTo(Message);
 Message.hasMany(Attachment);
 Attachment.belongsTo(Message);
 
-Message.hasMany(QuotedMessage);
-QuotedMessage.belongsTo(Message);
+// Message.hasOne(Message, { as: 'quotedMessage', foreignKey: 'id', sourceKey: 'quotedMessageId' });
+// Message.belongsTo(Message, { through: 'QuotedMessage'});
+Message.belongsToMany(Message, { through: 'QuotedMessage', as: 'quotedMessage' });
 
 User.hasMany(Reaction, { onDelete: 'CASCADE' });
 Reaction.belongsTo(User);

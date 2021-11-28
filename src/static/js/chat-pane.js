@@ -30,6 +30,7 @@ const postMessage = async (e) => {
         form.reset();
     }
     form.querySelector('textarea').rows = 1;
+    clearReply();
 }
 
 let messageLastScrollHeight;
@@ -59,7 +60,6 @@ const submitOnEnter = (e) => {
 }
 
 const delMessage = async (e) => {
-    // console.log(e);
     const messageId = e.target.closest('div.message-row').dataset.messageId;
     ws.send(JSON.stringify({
         token: getCookie('jwt'),
@@ -73,16 +73,15 @@ const toggleMessageMenu = (e) => {
     // require and event to be passed so it can be called by unrelated 
     // functions
     let bubble;
-    if (e.currentTarget.matches('#message-menu-underlay')) {
+    if (e && !e.currentTarget.matches('#message-menu-underlay')) {
+        bubble = e.target.closest('div.message-row');
+    } else {
         const openMenu = document.querySelector('button.message-menu-btn[data-state="open"]');
         bubble = openMenu.closest('div.message-row');
-    } else {
-        bubble = e.target.closest('div.message-row');
     }
     const menuBtn = bubble.querySelector('.message-menu-btn');
     const menuElem = bubble.querySelector('.message-menu');
     const underlay = document.getElementById('message-menu-underlay');
-    // console.log(bubble, menuBtn, menuElem);
     if (menuBtn.dataset.state === 'closed') {
         menuBtn.classList.remove('child');
         menuElem.classList.remove('dn');
@@ -109,6 +108,7 @@ const reactToMessage = (e) => {
             reactedAt: new Date()
         }
     }));
+    toggleMessageMenu();
 }
 
 const replyOpenTransition = (e) => {
@@ -117,6 +117,7 @@ const replyOpenTransition = (e) => {
         document.getElementById('reply-message').clientWidth;
         document.getElementById('reply-message').classList.remove('o-0');
     }
+    // TODO: figure out why msgBox is in scope here ...
     msgBox.removeEventListener('transitionend', replyOpenTransition);
 }
 
@@ -130,6 +131,8 @@ const replyToMessage = (e) => {
     msgBox.style.height = '116px';
     document.getElementById('reply-contents').innerHTML = msgContents;
     document.getElementsByName('replyMsgId')[0].value = msgId;
+    toggleMessageMenu();
+    document.getElementById('new-message').focus();
 }
 
 const replyCloseTransition = (e) => {
@@ -161,8 +164,6 @@ const typingIndicator = (e) => {
             }
         }));
         typingStatus = true;
-    } else {
-
     }
     clearTimeout(typingTimeout);
     typingTimeout = setTimeout(() => {

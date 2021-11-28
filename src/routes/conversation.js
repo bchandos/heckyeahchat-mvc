@@ -7,6 +7,7 @@ const Conversation = sequelize.models.Conversation;
 const User = sequelize.models.User;
 const Reaction = sequelize.models.Reaction;
 const ReactionType = sequelize.models.ReactionType;
+// const QuotedMessage = sequelize.models.QuotedMessage;
 
 // CRUD 
 
@@ -24,9 +25,29 @@ router.get('/:id', authenticateToken, async (req, res) => {
             [Reaction,'reactedAt', 'ASC'],
         ], 
         include: [
-            { model: Reaction, include: [ ReactionType, { model: User, attributes: ['nickname'] } ] }
-        ] 
+            { 
+                model: Reaction, 
+                include: [ 
+                    ReactionType, 
+                    { 
+                        model: User, 
+                        attributes: ['nickname'] 
+                    } 
+                ]
+            },
+            // 'quotedMessage'
+            {
+                association: 'quotedMessage',
+                include: [
+                    {
+                        model: User,
+                        attributes: ['nickname']
+                    }
+                ]
+            }
+        ]
     });
+    // messages.forEach(m => console.log(m.quotedMessage, m.quotedMessage[0]))
     return res.render('chat-pane.html', { 
         conversation, 
         user, 

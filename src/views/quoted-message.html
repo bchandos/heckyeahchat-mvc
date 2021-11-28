@@ -1,0 +1,11 @@
+{% set qm = msg.quotedMessage[0] %}
+<div class="quoted-message w-90 pa2 mb2 bl bw2 br3 b--gold bg-light-gray">
+    <div class="f7 dark-green">
+        {% if qm.UserId != msg.UserId or whom != 'self' %}
+            {{qm.User.nickname}}
+        {% else %}
+            You
+        {% endif %}
+    </div>
+    <div class="w-100">{{ qm.text }}</div>
+</div>

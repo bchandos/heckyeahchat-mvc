@@ -7,6 +7,7 @@ const Message = sequelize.models.Message;
 const User = sequelize.models.User;
 const Reaction = sequelize.models.Reaction;
 const ReactionType = sequelize.models.ReactionType;
+const QuotedMessage = sequelize.models.QuotedMessage;
 
 const wss = new Server({ noServer: true });
 
@@ -36,6 +37,12 @@ wss.on('connection', (ws) => {
                     });
                     message.setUser(msgJson.contents.userId);
                     message.setConversation(msgJson.contents.conversationId);
+                    if (msgJson.contents.replyMsgId) {
+                        // const repliedMsg = await Message.findByPk(msgJson.contents.replyMsgId);
+                        // message.setQuotedBy(repliedMsg.id);
+                        // repliedMsg.setQuotedMessage(message.id);
+                        message.setQuotedMessage(msgJson.contents.replyMsgId);
+                    }
                     await message.save();
                     const newMessage = await Message.findByPk(message.id, {
                         order: [
@@ -46,6 +53,7 @@ wss.on('connection', (ws) => {
                                 model: Reaction,
                                 include: [ReactionType, { model: User, attributes: ['nickname'] }],
                             },
+                            'quotedMessage'
                         ],
                     });
                     // Include in the response the message so the User ID can be compared

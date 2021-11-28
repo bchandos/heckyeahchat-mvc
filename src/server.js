@@ -36,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'static')))
 
 const server = app.listen(process.env.PORT, async () => {
     await sequelize.sync();
+    // await sequelize.sync({ force: true });
     console.log('All models were synchronized successfully.')
     console.log(`Template app listening on port ${process.env.PORT}`);
 });

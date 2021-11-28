@@ -3,6 +3,9 @@
 {% set container_class = 'justify-start' if whom == 'other' else 'justify-end' %}
 <div class="message-row flex flex-row {{container_class}} {{'last-of-my-kind' if loop.last else ''}}" data-message-id="{{msg.id}}">
     <span class="message-bubble ph2 pt2 pb1 ma2 w-75 br4 relative hide-child {{span_class}}">
+        {% if msg.quotedMessage | length %}
+            {% include "quoted-message.html" %}
+        {% endif %}
         <div class="message-contents pv1">
             {{msg.text}}
         </div>
