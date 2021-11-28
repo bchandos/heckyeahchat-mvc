@@ -39,7 +39,7 @@ const submitOnEnter = (e) => {
         e.preventDefault();
         document.getElementById('send-message-btn').click();
     }
-    // This is not an ideal solution because it can't respond to 
+    // TODO: This is not an ideal solution because it can't respond to 
     // pasted text, but we'll need to address later
     const textarea = e.target;
     const limitRows = 6;
@@ -69,6 +69,9 @@ const delMessage = async (e) => {
 }
 
 const toggleMessageMenu = (e) => {
+    // TODO: This needs to be made into a more versatile function that doesn't
+    // require and event to be passed so it can be called by unrelated 
+    // functions
     let bubble;
     if (e.currentTarget.matches('#message-menu-underlay')) {
         const openMenu = document.querySelector('button.message-menu-btn[data-state="open"]');
@@ -256,5 +259,6 @@ ws.addEventListener('message', (e) => {
 document.querySelector('.last-of-my-kind').scrollIntoView({ behavior: 'smooth' });
 
 // Random
+// TODO: This needs to handle window resizing events
 const msgBox = document.getElementById('post-message-box');
 msgBox.style.height = `${msgBox.clientHeight}px`;

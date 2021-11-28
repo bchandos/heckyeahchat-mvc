@@ -12,6 +12,7 @@
         <button class="message-menu-btn child bn bg-transparent pointer absolute right-0 top-0" data-state="closed">
             <span class="material-icons message-icon">expand_more</span>
         </button>
+        {# TODO: Message menu needs to appear *above* bubble when at bottom of screen #}
         <div class="message-menu dn absolute mr2 mt1 br2 bg-light-gray top-1 right-0 ba shadow-1 z-5 overflow-hidden">
             <div class="ph1 pv2 f4 bb b--gray">
                 {% for rt in reactionTypes %}
