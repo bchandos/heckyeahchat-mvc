@@ -53,7 +53,10 @@ wss.on('connection', (ws) => {
                                 model: Reaction,
                                 include: [ReactionType, { model: User, attributes: ['nickname'] }],
                             },
-                            'quotedMessage'
+                            { 
+                                association: 'quotedMessage',
+                                include: [{ model: User, attributes: ['nickname'] }]
+                            }
                         ],
                     });
                     // Include in the response the message so the User ID can be compared
