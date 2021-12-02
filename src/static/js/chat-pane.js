@@ -4,7 +4,7 @@
 
 import { getCookie, delegator, replacer } from './utils.js';
 
-const ws = new WebSocket('ws://localhost:5000');
+let ws = new WebSocket('ws://localhost:5000');
 
 const currentUserResp = await fetch('/user/current');
 const currentUser = await currentUserResp.json();
@@ -69,11 +69,8 @@ const delMessage = async (e) => {
 }
 
 const toggleMessageMenu = (e) => {
-    // TODO: This needs to be made into a more versatile function that doesn't
-    // require and event to be passed so it can be called by unrelated 
-    // functions
     let bubble;
-    if (e && !e.currentTarget.matches('#message-menu-underlay')) {
+    if (e && !e.target.matches('#message-menu-underlay')) {
         bubble = e.target.closest('div.message-row');
     } else {
         const openMenu = document.querySelector('button.message-menu-btn[data-state="open"]');
@@ -83,6 +80,11 @@ const toggleMessageMenu = (e) => {
     const menuElem = bubble.querySelector('.message-menu');
     const underlay = document.getElementById('message-menu-underlay');
     if (menuBtn.dataset.state === 'closed') {
+        // First, determine if the menu should open up or down...
+        const openDirection = openUpOrDown(bubble);
+        if (openDirection === 'up') {
+            menuElem.style.top = '-125px';
+        }
         menuBtn.classList.remove('child');
         menuElem.classList.remove('dn');
         underlay.classList.remove('dn');
@@ -90,6 +92,7 @@ const toggleMessageMenu = (e) => {
     } else {
         menuBtn.classList.add('child');
         menuElem.classList.add('dn');
+        menuElem.style.top = null;
         underlay.classList.add('dn');
         menuBtn.dataset.state = 'closed';
     }
@@ -180,6 +183,18 @@ const typingIndicator = (e) => {
     }, 2000)
 }
 
+const setMenuTimeout = (e) => {
+    if (!e.target.matches('.message-icon')) {
+        clickTimeout = setTimeout( () => {
+            toggleMessageMenu(e);
+        }, 500);
+    }
+}
+
+const clearMenuTimeout = (e) => {
+    clearTimeout(clickTimeout);
+}
+
 // Attach event handlers
 
 // Track multiple key presses so that Shift+Enter will work in textarea
@@ -201,6 +216,8 @@ delegator('#chat-pane', '.message-icon', 'click', toggleMessageMenu);
 delegator('#chat-pane', '.msg-del-btn', 'click', delMessage);
 delegator('#chat-pane', '.msg-react-btn', 'click', reactToMessage);
 delegator('#chat-pane', '.msg-reply-btn', 'click', replyToMessage);
+delegator('#chat-pane', '.message-bubble, .message-bubble *', 'mousedown', setMenuTimeout);
+delegator('body', '*', 'mouseup', clearMenuTimeout);
 
 document.getElementById('message-menu-underlay').addEventListener('click', toggleMessageMenu);
 
@@ -256,6 +273,18 @@ ws.addEventListener('message', (e) => {
     }
 })
 
+const wsChecker = setInterval(() => {
+    console.log(ws.readyState);
+    if (ws.readyState === 3) {
+        console.log('Socket has been disconnected!');
+        // let i = 0;
+        // while (ws.readyState !== 1 && i < 3) {
+        //     ws = new WebSocket('ws://localhost:5000');
+        //     i++;
+        // }
+    }
+}, 30000)
+
 // Scroll
 document.querySelector('.last-of-my-kind').scrollIntoView({ behavior: 'smooth' });
 
@@ -263,3 +292,13 @@ document.querySelector('.last-of-my-kind').scrollIntoView({ behavior: 'smooth' }
 // TODO: This needs to handle window resizing events
 const msgBox = document.getElementById('post-message-box');
 msgBox.style.height = `${msgBox.clientHeight}px`;
+
+const openUpOrDown = (bubbleElem) => {
+    const view = document.getElementById('message-view')
+    const viewBottom = view.getBoundingClientRect().bottom;
+    const bubbleBottom = bubbleElem.getBoundingClientRect().bottom;
+    // the value 100 should probably be calculated by height of the bubble element
+    // as well as some reasonable estimate of the menu height, but it works pretty
+    // well for a stand-in value
+    return (viewBottom - 100) > bubbleBottom ? 'down' : 'up';
+}
